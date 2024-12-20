@@ -26,13 +26,14 @@
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
       text-align: center;
       width: 320px;
+      position: relative;
     }
 
     .time-display {
       font-size: 3rem;
       color: #fff;
       margin-bottom: 20px;
-      background: rgba(255, 255, 255, 0.2);
+      background: linear-gradient(to left, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.2) 100%);
       padding: 10px;
       border-radius: 10px;
       box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -40,6 +41,20 @@
       width: calc(100% - 20px);
       margin-left: auto;
       margin-right: auto;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .time-progress {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.4);
+      width: 100%;
+      transform-origin: right;
+      transform: scaleX(1);
+      transition: transform 1s linear;
     }
 
     .controls {
@@ -53,6 +68,26 @@
       justify-content: space-between;
       margin-top: 15px;
       gap: 5px;
+      position: absolute;
+      bottom: -40px;
+      left: 10%;
+      right: 10%;
+    }
+
+    .quick-select div {
+      font-size: 0.8rem;
+      padding: 5px;
+      cursor: pointer;
+      border-radius: 5px;
+      text-align: center;
+      background-color: #fff;
+      color: #40362E;
+      border: 1px solid #40362E;
+      transition: background-color 0.3s ease;
+    }
+
+    .quick-select div:hover {
+      background-color: #f5f5f5;
     }
 
     button {
@@ -70,49 +105,23 @@
       background-color: #5a4c3d;
       transform: scale(1.05);
     }
-
-    .quick-button {
-      background-color: #fff;
-      color: #40362E;
-      border: 1px solid #40362E;
-      padding: 5px 10px;
-      font-size: 0.8rem;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background-color 0.3s ease, transform 0.2s ease;
-    }
-
-    .quick-button:hover {
-      background-color: #f5f5f5;
-      transform: scale(1.05);
-    }
-
-    .fade {
-      animation: fadeIn 1s ease-in-out;
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-      }
-      to {
-        opacity: 1;
-      }
-    }
   </style>
 </head>
 <body>
   <div class="timer-container">
-    <div id="time-display" class="time-display">25:00</div>
+    <div id="time-display" class="time-display">
+      <div id="time-progress" class="time-progress"></div>
+      <span id="time-text">25:00</span>
+    </div>
     <div class="controls">
       <button id="start-stop">Start</button>
       <button id="reset">Reset</button>
     </div>
     <div class="quick-select">
-      <button class="quick-button" data-time="300">5:00</button>
-      <button class="quick-button" data-time="600">10:00</button>
-      <button class="quick-button" data-time="1500">25:00</button>
-      <button class="quick-button" data-time="3000">50:00</button>
+      <div data-time="300">5:00</div>
+      <div data-time="600">10:00</div>
+      <div data-time="1500">25:00</div>
+      <div data-time="3000">50:00</div>
     </div>
   </div>
 
@@ -120,11 +129,14 @@
     let isRunning = false;
     let timerInterval;
     let timeLeft = 25 * 60; // Default session length in seconds
+    const totalTime = timeLeft; // For progress tracking
 
     const timeDisplay = document.getElementById('time-display');
+    const timeText = document.getElementById('time-text');
+    const timeProgress = document.getElementById('time-progress');
     const startStopButton = document.getElementById('start-stop');
     const resetButton = document.getElementById('reset');
-    const quickButtons = document.querySelectorAll('.quick-button');
+    const quickButtons = document.querySelectorAll('.quick-select div');
 
     // Format time as mm:ss
     function formatTime(seconds) {
@@ -133,9 +145,11 @@
       return `${mins}:${secs}`;
     }
 
-    // Update the displayed time
+    // Update the displayed time and progress
     function updateTimeDisplay() {
-      timeDisplay.textContent = formatTime(timeLeft);
+      timeText.textContent = formatTime(timeLeft);
+      const progress = timeLeft / totalTime;
+      timeProgress.style.transform = `scaleX(${progress})`;
     }
 
     // Start or stop the timer
@@ -162,7 +176,7 @@
     function resetTimer() {
       clearInterval(timerInterval);
       isRunning = false;
-      timeLeft = 25 * 60; // Reset to default session length
+      timeLeft = totalTime; // Reset to default session length
       updateTimeDisplay();
       startStopButton.textContent = 'Start';
     }
