@@ -2,11 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Pomodoro Timer</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Custom Pomodoro Timer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Georgia:wght@400;700&display=swap');
 
+    /* General Styling */
     body {
       font-family: 'Georgia', serif;
       background: transparent;
@@ -18,32 +19,44 @@
       height: 100vh;
     }
 
-    .clock-container {
+    .timer-container {
       background-color: rgba(64, 54, 46, 0.8);
       padding: 20px;
       border-radius: 15px;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-      width: 350px;
       text-align: center;
+      width: 300px;
     }
 
-    #time-left {
+    .time-display {
       font-size: 3rem;
       color: #fff;
+      margin-bottom: 20px;
+      background: rgba(255, 255, 255, 0.1);
       padding: 10px;
       border-radius: 10px;
-      background: rgba(255, 255, 255, 0.1);
       box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.1);
-      margin-bottom: 10px;
     }
 
-    .hover {
-      transition: all 0.5s ease;
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 15px;
     }
 
-    .hover:hover {
-      background-color: rgba(90, 76, 61, 0.8);
+    button {
+      background-color: #40362E;
       color: #fff;
+      border: none;
+      padding: 10px 20px;
+      font-size: 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #5a4c3d;
     }
 
     .fade {
@@ -61,166 +74,70 @@
   </style>
 </head>
 <body>
-  <div id="root"></div>
-  <script type="module">
-    import React from "https://cdn.skypack.dev/react@17.0.1";
-    import ReactDOM from "https://cdn.skypack.dev/react-dom@17.0.1";
+  <div class="timer-container">
+    <div id="time-display" class="time-display">25:00</div>
+    <div class="controls">
+      <button id="start-stop">Start</button>
+      <button id="reset">Reset</button>
+    </div>
+  </div>
 
-    const SESSION = "Session";
-    const BREAK = "Break";
-    const SESSIONLEN = 25;
-    const BREAKLEN = 5;
+  <script>
+    let isRunning = false;
+    let timerInterval;
+    let timeLeft = 25 * 60; // Default session length in seconds
 
-    class App extends React.Component {
-      constructor(props) {
-        super(props);
-        this.state = {
-          breakLen: BREAKLEN,
-          sessionLen: SESSIONLEN,
-          timeLeft: SESSIONLEN * 60,
-          timerType: SESSION,
-          isTimerRunning: false,
-          intervalId: "",
-        };
+    const timeDisplay = document.getElementById('time-display');
+    const startStopButton = document.getElementById('start-stop');
+    const resetButton = document.getElementById('reset');
 
-        this.changeTimerType = this.changeTimerType.bind(this);
-        this.handleDecrementBreak = this.handleDecrementBreak.bind(this);
-        this.handleIncrementBreak = this.handleIncrementBreak.bind(this);
-        this.handleDecrementSession = this.handleDecrementSession.bind(this);
-        this.handleIncrementSession = this.handleIncrementSession.bind(this);
-        this.resetTimer = this.resetTimer.bind(this);
-        this.toggleStartStopTimer = this.toggleStartStopTimer.bind(this);
-      }
-
-      changeTimerType() {
-        this.setState(
-          {
-            timerType: this.state.timerType === SESSION ? BREAK : SESSION,
-            timeLeft:
-              this.state.timerType === SESSION
-                ? this.state.breakLen * 60
-                : this.state.sessionLen * 60,
-          },
-          () => {
-            this.runTimer();
-          }
-        );
-      }
-
-      handleDecrementBreak() {
-        if (!this.state.isTimerRunning && this.state.breakLen > 1) {
-          this.setState({
-            breakLen: this.state.breakLen - 1,
-            timeLeft:
-              this.state.timerType === BREAK
-                ? (this.state.breakLen - 1) * 60
-                : this.state.timeLeft,
-          });
-        }
-      }
-
-      handleIncrementBreak() {
-        if (!this.state.isTimerRunning && this.state.breakLen < 60) {
-          this.setState({
-            breakLen: this.state.breakLen + 1,
-            timeLeft:
-              this.state.timerType === BREAK
-                ? (this.state.breakLen + 1) * 60
-                : this.state.timeLeft,
-          });
-        }
-      }
-
-      handleDecrementSession() {
-        if (!this.state.isTimerRunning && this.state.sessionLen > 1) {
-          this.setState({
-            sessionLen: this.state.sessionLen - 1,
-            timeLeft:
-              this.state.timerType === SESSION
-                ? (this.state.sessionLen - 1) * 60
-                : this.state.timeLeft,
-          });
-        }
-      }
-
-      handleIncrementSession() {
-        if (!this.state.isTimerRunning && this.state.sessionLen < 60) {
-          this.setState({
-            sessionLen: this.state.sessionLen + 1,
-            timeLeft:
-              this.state.timerType === SESSION
-                ? (this.state.sessionLen + 1) * 60
-                : this.state.timeLeft,
-          });
-        }
-      }
-
-      resetTimer() {
-        clearInterval(this.state.intervalId);
-        this.setState({
-          breakLen: BREAKLEN,
-          sessionLen: SESSIONLEN,
-          timeLeft: SESSIONLEN * 60,
-          timerType: SESSION,
-          isTimerRunning: false,
-          intervalId: "",
-        });
-      }
-
-      runTimer() {
-        let intervalId = setInterval(() => {
-          this.setState(
-            {
-              timeLeft: this.state.timeLeft - 1,
-            },
-            () => {
-              if (this.state.timeLeft === 0) {
-                this.changeTimerType();
-              }
-            }
-          );
-        }, 1000);
-        this.setState({
-          intervalId,
-        });
-      }
-
-      toggleStartStopTimer() {
-        if (!this.state.isTimerRunning) {
-          this.runTimer();
-          this.setState({ isTimerRunning: true });
-        } else {
-          clearInterval(this.state.intervalId);
-          this.setState({
-            isTimerRunning: false,
-            intervalId: "",
-          });
-        }
-      }
-
-      clockify() {
-        let minutes = Math.floor(this.state.timeLeft / 60);
-        let seconds = this.state.timeLeft - minutes * 60;
-        seconds = seconds < 10 ? "0" + seconds : seconds;
-        minutes = minutes < 10 ? "0" + minutes : minutes;
-        return minutes + ":" + seconds;
-      }
-
-      render() {
-        let stopStartTimer = this.state.isTimerRunning
-          ? "fa fa-pause"
-          : "fa fa-play";
-
-        return (
-          <div className="clock-container fade">
-            <div id="time-left" className="fade">{this.clockify()}</div>
-            <div id="timer-label" className="hover">{this.state.timerType}</div>
-          </div>
-        );
-      }
+    // Format time as mm:ss
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+      const secs = (seconds % 60).toString().padStart(2, '0');
+      return `${mins}:${secs}`;
     }
 
-    ReactDOM.render(<App />, document.getElementById("root"));
+    // Update the displayed time
+    function updateTimeDisplay() {
+      timeDisplay.textContent = formatTime(timeLeft);
+    }
+
+    // Start or stop the timer
+    function toggleStartStop() {
+      if (isRunning) {
+        clearInterval(timerInterval);
+        startStopButton.textContent = 'Start';
+      } else {
+        timerInterval = setInterval(() => {
+          if (timeLeft > 0) {
+            timeLeft--;
+            updateTimeDisplay();
+          } else {
+            clearInterval(timerInterval);
+            alert('Time is up!');
+          }
+        }, 1000);
+        startStopButton.textContent = 'Pause';
+      }
+      isRunning = !isRunning;
+    }
+
+    // Reset the timer
+    function resetTimer() {
+      clearInterval(timerInterval);
+      isRunning = false;
+      timeLeft = 25 * 60; // Reset to default session length
+      updateTimeDisplay();
+      startStopButton.textContent = 'Start';
+    }
+
+    // Event listeners
+    startStopButton.addEventListener('click', toggleStartStop);
+    resetButton.addEventListener('click', resetTimer);
+
+    // Initialize display
+    updateTimeDisplay();
   </script>
 </body>
 </html>
