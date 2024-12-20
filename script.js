@@ -146,28 +146,8 @@ class App extends React.Component {
 
     return (
       <div className="clock-container fade">
-        <Timer
-          timeLeft={this.clockify()}
-          timerType={this.state.timerType}
-          resetTimer={this.resetTimer}
-          stopStartTimer={stopStartTimer}
-          toggleStartStopTimer={this.toggleStartStopTimer}
-        />
-      </div>
-    );
-  }
-}
-
-class Timer extends React.Component {
-  render() {
-    return (
-      <div>
-        <div id="time-left" className="fade">
-          {this.props.timeLeft}
-        </div>
-        <div id="timer-label" className="hover">
-          {this.props.timerType}
-        </div>
+        <div id="time-left" className="fade">{this.clockify()}</div>
+        <div id="timer-label" className="hover">{this.state.timerType}</div>
       </div>
     );
   }
