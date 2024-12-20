@@ -5,9 +5,7 @@ body {
   font-family: 'Georgia', serif;
   background: transparent;
   color: #40362E;
-}
-
-#root {
+  margin: 0;
   display: flex;
   justify-content: center;
   align-items: center;
