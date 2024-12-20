@@ -4,12 +4,75 @@
   <meta charset="UTF-8">
   <title>Pomodoro Timer</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
-  <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css'>
-  <link rel="stylesheet" href="./style.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Georgia:wght@400;700&display=swap');
+
+    /* General Styling */
+    body {
+      font-family: 'Georgia', serif;
+      background: transparent;
+      color: #40362E;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    /* Clock Container */
+    .clock-container {
+      background-color: rgba(64, 54, 46, 0.8); /* Halbtransparenter Hintergrund */
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      width: 350px;
+      text-align: center;
+    }
+
+    /* Time Display */
+    #time-left {
+      font-size: 3rem;
+      color: #fff;
+      padding: 10px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.1);
+      margin-bottom: 10px;
+    }
+
+    /* Hover Effect */
+    .hover {
+      transition: all 0.5s ease;
+    }
+
+    .hover:hover {
+      background-color: rgba(90, 76, 61, 0.8);
+      color: #fff;
+    }
+
+    /* Fade Animation */
+    .fade {
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+  </style>
 </head>
 <body>
-  <div id="root"></div>
-  <script type="module" src="./script.js"></script>
+  <div class="clock-container fade">
+    <div id="time-left">25:00</div>
+    <div id="timer-label" class="hover">Session</div>
+  </div>
+  <script>
+    document.getElementById('time-left').textContent = "25:00";
+    document.getElementById('timer-label').textContent = "Session";
+  </script>
 </body>
 </html>
