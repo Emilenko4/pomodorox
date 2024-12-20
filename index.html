@@ -36,11 +36,19 @@
       padding: 10px;
       border-radius: 10px;
       box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      width: 100%;
     }
 
     .controls {
       display: flex;
       justify-content: space-between;
+      margin-top: 15px;
+    }
+
+    .quick-select {
+      display: flex;
+      justify-content: space-around;
       margin-top: 15px;
     }
 
@@ -80,6 +88,12 @@
       <button id="start-stop">Start</button>
       <button id="reset">Reset</button>
     </div>
+    <div class="quick-select">
+      <button class="quick-button" data-time="300">5:00</button>
+      <button class="quick-button" data-time="600">10:00</button>
+      <button class="quick-button" data-time="1500">25:00</button>
+      <button class="quick-button" data-time="3000">50:00</button>
+    </div>
   </div>
 
   <script>
@@ -90,6 +104,7 @@
     const timeDisplay = document.getElementById('time-display');
     const startStopButton = document.getElementById('start-stop');
     const resetButton = document.getElementById('reset');
+    const quickButtons = document.querySelectorAll('.quick-button');
 
     // Format time as mm:ss
     function formatTime(seconds) {
@@ -131,6 +146,16 @@
       updateTimeDisplay();
       startStopButton.textContent = 'Start';
     }
+
+    // Quick time selection
+    quickButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        if (!isRunning) {
+          timeLeft = parseInt(button.dataset.time, 10);
+          updateTimeDisplay();
+        }
+      });
+    });
 
     // Event listeners
     startStopButton.addEventListener('click', toggleStartStop);
