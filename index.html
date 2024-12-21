@@ -20,7 +20,7 @@
     }
 
     .timer-container {
-      background: linear-gradient(to bottom, #8C7B65 100%, #E0E0E0 0%);
+      background: linear-gradient(to top, #8C7B65 100%, #E0E0E0 0%);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -139,7 +139,7 @@
 
       const gradientPosition = (timeLeft / totalTime) * 100;
       document.querySelector('.timer-container').style.background =
-        `linear-gradient(to bottom, #8C7B65 ${gradientPosition}%, #E0E0E0 ${gradientPosition}%)`;
+        `linear-gradient(to top, #8C7B65 ${gradientPosition}%, #E0E0E0 ${gradientPosition}%)`;
     }
 
     // Start or stop the timer
