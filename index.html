@@ -27,46 +27,53 @@
       justify-content: center;
       text-align: center;
       position: relative;
-      width: 300px;
+      width: 320px;
+      padding: 10px;
+      border: 1px solid #8C7B65;
+      border-radius: 15px;
     }
 
     .circle-container {
       position: relative;
       width: 250px;
       height: 250px;
-      border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
-    .circle-progress {
+    .minute-markers {
       position: absolute;
-      top: 0;
-      left: 0;
       width: 100%;
       height: 100%;
-      border-radius: 50%;
-      background: conic-gradient(rgba(140, 123, 101, 0.1) 0%, #8C7B65 0%);
-      z-index: 1;
-      transform: rotate(-90deg);
-      clip-path: circle(50% at 50% 50%);
+    }
+
+    .minute-marker {
+      position: absolute;
+      width: 2px;
+      height: 20px;
+      background-color: #8C7B65;
+      top: 0;
+      left: 50%;
+      transform-origin: bottom center;
+      transform: rotate(0deg);
+      transition: background-color 0.3s linear;
     }
 
     .time-display {
-      font-size: 2.5rem;
+      font-size: 3rem;
       color: #8C7B65;
       position: relative;
       z-index: 2;
     }
 
     .dropdown {
-      margin: 15px 0;
+      margin: 10px 0;
     }
 
     select {
       width: 100%;
-      padding: 10px;
+      padding: 8px;
       border: none;
       border-radius: 10px;
       background: transparent;
@@ -77,7 +84,7 @@
     }
 
     .controls {
-      margin-top: 15px;
+      margin-top: 10px;
       display: flex;
       justify-content: space-between;
       width: 100%;
@@ -106,7 +113,7 @@
 <body>
   <div class="timer-container">
     <div class="circle-container">
-      <div id="circle-progress" class="circle-progress"></div>
+      <div class="minute-markers" id="minute-markers"></div>
       <div id="time-display" class="time-display">25:00</div>
     </div>
     <div class="dropdown">
@@ -130,23 +137,40 @@
     let totalTime = timeLeft;
 
     const timeDisplay = document.getElementById('time-display');
-    const circleProgress = document.getElementById('circle-progress');
+    const minuteMarkers = document.getElementById('minute-markers');
     const startStopButton = document.getElementById('start-stop');
     const resetButton = document.getElementById('reset');
     const quickSelect = document.getElementById('quick-select');
+
+    // Create minute markers
+    function createMinuteMarkers() {
+      for (let i = 0; i < 60; i++) {
+        const marker = document.createElement('div');
+        marker.classList.add('minute-marker');
+        marker.style.transform = `rotate(${i * 6}deg)`;
+        minuteMarkers.appendChild(marker);
+      }
+    }
+
+    // Update the displayed time and minute markers
+    function updateTimeDisplay() {
+      timeDisplay.textContent = formatTime(timeLeft);
+      const activeMarkers = Math.floor((timeLeft / totalTime) * 60);
+
+      Array.from(minuteMarkers.children).forEach((marker, index) => {
+        if (index < activeMarkers) {
+          marker.style.backgroundColor = '#8C7B65';
+        } else {
+          marker.style.backgroundColor = 'rgba(140, 123, 101, 0.1)';
+        }
+      });
+    }
 
     // Format time as mm:ss
     function formatTime(seconds) {
       const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
       const secs = (seconds % 60).toString().padStart(2, '0');
       return `${mins}:${secs}`;
-    }
-
-    // Update the displayed time and progress
-    function updateTimeDisplay() {
-      timeDisplay.textContent = formatTime(timeLeft);
-      const progress = 100 - (timeLeft / totalTime) * 100;
-      circleProgress.style.background = `conic-gradient(rgba(140, 123, 101, 0.1) ${progress}%, #8C7B65 ${progress}%)`;
     }
 
     // Start or stop the timer
@@ -192,6 +216,7 @@
     resetButton.addEventListener('click', resetTimer);
 
     // Initialize display
+    createMinuteMarkers();
     updateTimeDisplay();
   </script>
 </body>
