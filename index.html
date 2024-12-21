@@ -20,7 +20,7 @@
     }
 
     .timer-container {
-      background: linear-gradient(to bottom, #8C7B65 0%, #E0E0E0 100%);
+      background: linear-gradient(to bottom, #8C7B65 100%, #E0E0E0 0%);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -28,7 +28,7 @@
       text-align: center;
       position: relative;
       width: 320px;
-      height: 60%;
+      height: 50%;
       padding: 10px;
       border: 1px solid #8C7B65;
       border-radius: 20px;
@@ -42,6 +42,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      margin-bottom: 20px;
     }
 
     .time-display span {
@@ -49,32 +50,17 @@
       text-align: center;
     }
 
-    .dropdown {
-      margin: 10px 0;
-    }
-
-    select {
-      width: 100%;
-      padding: 8px;
-      border: none;
-      border-radius: 20px;
-      background: transparent;
-      color: #4F4F4F; /* Dark gray for dropdown text */
-      font-size: 1rem;
-      text-align: center;
-      cursor: pointer;
-    }
-
     .controls {
       margin-top: 10px;
       display: flex;
       justify-content: space-between;
+      align-items: center;
       width: 100%;
-      gap: 30px; /* Increased spacing */
+      gap: 10px; /* Spacing between elements */
     }
 
     .controls button {
-      flex: 0 0 40%; /* Reduced button width */
+      flex: 0 0 30%; /* Reduced button width */
       padding: 6px;
       border-radius: 20px;
       background: #fff; /* White background */
@@ -90,6 +76,27 @@
       background-color: #E0E0E0; /* Light gray on hover */
       color: #8C7B65;
     }
+
+    .dropdown {
+      flex: 1;
+      text-align: center;
+    }
+
+    select {
+      width: 100%;
+      padding: 8px;
+      border: none;
+      border-radius: 20px;
+      background: transparent;
+      color: #fff; /* White text for dropdown */
+      font-size: 1rem;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    select option {
+      color: #000; /* Black text for dropdown options */
+    }
   </style>
 </head>
 <body>
@@ -97,16 +104,16 @@
     <div id="time-display" class="time-display">
       <span id="minutes">25</span>:<span id="seconds">00</span>
     </div>
-    <div class="dropdown">
-      <select id="quick-select">
-        <option value="300">5:00</option>
-        <option value="600">10:00</option>
-        <option value="1500" selected>25:00</option>
-        <option value="3000">50:00</option>
-      </select>
-    </div>
     <div class="controls">
       <button id="start-stop">Start</button>
+      <div class="dropdown">
+        <select id="quick-select">
+          <option value="300">5:00</option>
+          <option value="600">10:00</option>
+          <option value="1500" selected>25:00</option>
+          <option value="3000">50:00</option>
+        </select>
+      </div>
       <button id="reset">Reset</button>
     </div>
   </div>
