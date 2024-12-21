@@ -33,6 +33,7 @@
       border: 1px solid #8C7B65;
       border-radius: 20px;
       overflow: hidden;
+      transition: background-color 0.5s ease;
     }
 
     .time-display {
@@ -56,7 +57,7 @@
       justify-content: space-between;
       align-items: center;
       width: 100%;
-      gap: 10px; /* Spacing between elements */
+      gap: 5px; /* Reduced spacing */
     }
 
     .controls button {
@@ -83,7 +84,7 @@
     }
 
     select {
-      width: 100%;
+      width: 80%; /* Reduced width */
       padding: 8px;
       border: none;
       border-radius: 20px;
@@ -100,7 +101,7 @@
   </style>
 </head>
 <body>
-  <div class="timer-container">
+  <div class="timer-container" id="timer-container">
     <div id="time-display" class="time-display">
       <span id="minutes">25</span>:<span id="seconds">00</span>
     </div>
@@ -129,17 +130,40 @@
     const startStopButton = document.getElementById('start-stop');
     const resetButton = document.getElementById('reset');
     const quickSelect = document.getElementById('quick-select');
+    const timerContainer = document.getElementById('timer-container');
 
     // Update the displayed time
     function updateTimeDisplay() {
-      const mins = Math.floor(timeLeft / 60).toString().padStart(2, '0');
-      const secs = (timeLeft % 60).toString().padStart(2, '0');
+      const mins = Math.floor(Math.abs(timeLeft) / 60).toString().padStart(2, '0');
+      const secs = (Math.abs(timeLeft) % 60).toString().padStart(2, '0');
       minutesDisplay.textContent = mins;
       secondsDisplay.textContent = secs;
+      if (timeLeft < 0) {
+        minutesDisplay.style.color = "red";
+        secondsDisplay.style.color = "red";
+      } else {
+        minutesDisplay.style.color = "white";
+        secondsDisplay.style.color = "white";
+      }
 
-      const gradientPosition = (timeLeft / totalTime) * 100;
-      document.querySelector('.timer-container').style.background =
+      const gradientPosition = (Math.max(timeLeft, 0) / totalTime) * 100;
+      timerContainer.style.background =
         `linear-gradient(to top, #8C7B65 ${gradientPosition}%, #E0E0E0 ${gradientPosition}%)`;
+    }
+
+    // Flash effect after reaching 00:00
+    function flashBackground() {
+      let flashCount = 0;
+      const flashInterval = setInterval(() => {
+        timerContainer.style.backgroundColor =
+          flashCount % 2 === 0 ? "red" : "transparent";
+        flashCount++;
+        if (flashCount === 10) {
+          clearInterval(flashInterval);
+          timerContainer.style.background =
+            `linear-gradient(to top, #8C7B65 ${Math.max(timeLeft, 0) / totalTime}%, #E0E0E0)`;
+        }
+      }, 1000);
     }
 
     // Start or stop the timer
@@ -149,12 +173,10 @@
         startStopButton.textContent = 'Start';
       } else {
         timerInterval = setInterval(() => {
-          if (timeLeft > 0) {
-            timeLeft--;
-            updateTimeDisplay();
-          } else {
-            clearInterval(timerInterval);
-            alert('Time is up!');
+          timeLeft--;
+          updateTimeDisplay();
+          if (timeLeft === 0) {
+            flashBackground();
           }
         }, 1000);
         startStopButton.textContent = 'Pause';
@@ -166,7 +188,9 @@
     function resetTimer() {
       clearInterval(timerInterval);
       isRunning = false;
-      timeLeft = totalTime;
+      const selectedTime = parseInt(quickSelect.value, 10);
+      timeLeft = selectedTime;
+      totalTime = selectedTime;
       updateTimeDisplay();
       startStopButton.textContent = 'Start';
     }
