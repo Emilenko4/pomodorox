@@ -30,7 +30,7 @@
       width: 320px;
       padding: 10px;
       border: 1px solid #8C7B65;
-      border-radius: 15px;
+      border-radius: 50px;
     }
 
     .circle-container {
@@ -61,7 +61,7 @@
     }
 
     .time-display {
-      font-size: 3rem;
+      font-size: 4rem;
       color: #8C7B65;
       position: relative;
       z-index: 2;
@@ -93,8 +93,8 @@
 
     .controls button {
       flex: 1;
-      padding: 8px;
-      border-radius: 20px;
+      padding: 6px;
+      border-radius: 15px;
       background: transparent;
       color: #8C7B65;
       font-family: 'Georgia', serif;
@@ -155,13 +155,13 @@
     // Update the displayed time and minute markers
     function updateTimeDisplay() {
       timeDisplay.textContent = formatTime(timeLeft);
-      const activeMarkers = Math.floor((timeLeft / totalTime) * 60);
+      const activeMarkers = 60 - Math.floor((timeLeft / totalTime) * 60);
 
       Array.from(minuteMarkers.children).forEach((marker, index) => {
         if (index < activeMarkers) {
-          marker.style.backgroundColor = '#8C7B65';
-        } else {
           marker.style.backgroundColor = 'rgba(140, 123, 101, 0.1)';
+        } else {
+          marker.style.backgroundColor = '#8C7B65';
         }
       });
     }
