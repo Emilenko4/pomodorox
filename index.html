@@ -20,104 +20,105 @@
     }
 
     .timer-container {
-      background-color: rgba(64, 54, 46, 0.9);
-      padding: 20px;
-      border-radius: 15px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      background-color: transparent;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
       text-align: center;
-      width: 400px;
       position: relative;
+      width: 300px;
     }
 
-    .time-display {
-      font-size: 3rem;
-      color: #fff;
-      margin: 0 auto 20px auto;
-      background: linear-gradient(to right, rgba(64, 54, 46, 1) 0%, rgba(255, 255, 255, 0.2) 100%);
-      padding: 10px;
-      border-radius: 10px;
-      box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.1);
-      text-align: center;
-      width: 70%;
+    .circle-container {
       position: relative;
-      overflow: hidden;
+      width: 250px;
+      height: 250px;
+      border-radius: 50%;
+      border: 10px solid rgba(64, 54, 46, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    .time-progress {
+    .circle-progress {
       position: absolute;
       top: 0;
       left: 0;
-      height: 100%;
-      background-color: rgba(255, 255, 255, 0.4);
       width: 100%;
-      transform-origin: right;
-      transform: scaleX(1);
-      transition: transform 1s linear;
+      height: 100%;
+      border-radius: 50%;
+      background: conic-gradient(rgba(64, 54, 46, 0.9) 0%, rgba(255, 255, 255, 0.2) 0%);
+      z-index: 1;
+      transform: rotate(-90deg);
+      clip-path: circle(50% at 50% 50%);
+    }
+
+    .time-display {
+      font-size: 2.5rem;
+      color: #40362E;
+      position: relative;
+      z-index: 2;
     }
 
     .controls {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 15px;
-    }
-
-    .controls button {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      background-color: #40362E;
-      color: #fff;
-      border: none;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: background-color 0.3s ease, transform 0.2s ease;
-    }
-
-    .controls button:hover {
-      background-color: #5a4c3d;
-      transform: scale(1.1);
-    }
-
-    .quick-select {
-      display: flex;
-      justify-content: space-between;
       margin-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
       gap: 10px;
     }
 
-    .quick-select div {
-      font-size: 0.9rem;
-      padding: 10px 15px;
-      cursor: pointer;
-      border-radius: 5px;
-      text-align: center;
-      background-color: #fff;
-      color: #40362E;
-      border: 1px solid #40362E;
-      transition: background-color 0.3s ease;
+    .controls button {
       flex: 1;
+      padding: 10px;
+      border-radius: 20px;
+      background: transparent;
+      color: #40362E;
+      border: 2px solid #40362E;
+      cursor: pointer;
+      transition: all 0.3s ease;
     }
 
-    .quick-select div:hover {
-      background-color: #f5f5f5;
+    .controls button:hover {
+      background-color: #40362E;
+      color: #fff;
+    }
+
+    .dropdown {
+      margin: 20px 0;
+    }
+
+    select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 20px;
+      border: 2px solid #40362E;
+      background: transparent;
+      color: #40362E;
+      font-size: 1rem;
+      text-align: center;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
   <div class="timer-container">
-    <div id="time-display" class="time-display">
-      <div id="time-progress" class="time-progress"></div>
-      <span id="time-text">25:00</span>
+    <div class="circle-container">
+      <div id="circle-progress" class="circle-progress"></div>
+      <div id="time-display" class="time-display">25:00</div>
+    </div>
+    <div class="dropdown">
+      <select id="quick-select">
+        <option value="300">5:00</option>
+        <option value="600">10:00</option>
+        <option value="1500" selected>25:00</option>
+        <option value="3000">50:00</option>
+      </select>
     </div>
     <div class="controls">
       <button id="start-stop">Start</button>
       <button id="reset">Reset</button>
-    </div>
-    <div class="quick-select">
-      <div data-time="300">5:00</div>
-      <div data-time="600">10:00</div>
-      <div data-time="1500">25:00</div>
-      <div data-time="3000">50:00</div>
     </div>
   </div>
 
@@ -125,14 +126,13 @@
     let isRunning = false;
     let timerInterval;
     let timeLeft = 25 * 60; // Default session length in seconds
-    const totalTime = timeLeft; // For progress tracking
+    let totalTime = timeLeft;
 
     const timeDisplay = document.getElementById('time-display');
-    const timeText = document.getElementById('time-text');
-    const timeProgress = document.getElementById('time-progress');
+    const circleProgress = document.getElementById('circle-progress');
     const startStopButton = document.getElementById('start-stop');
     const resetButton = document.getElementById('reset');
-    const quickButtons = document.querySelectorAll('.quick-select div');
+    const quickSelect = document.getElementById('quick-select');
 
     // Format time as mm:ss
     function formatTime(seconds) {
@@ -143,9 +143,9 @@
 
     // Update the displayed time and progress
     function updateTimeDisplay() {
-      timeText.textContent = formatTime(timeLeft);
-      const progress = timeLeft / totalTime;
-      timeProgress.style.transform = `scaleX(${progress})`;
+      timeDisplay.textContent = formatTime(timeLeft);
+      const progress = 100 - (timeLeft / totalTime) * 100;
+      circleProgress.style.background = `conic-gradient(rgba(255, 255, 255, 0.2) ${progress}%, rgba(64, 54, 46, 0.9) ${progress}%)`;
     }
 
     // Start or stop the timer
@@ -172,19 +172,18 @@
     function resetTimer() {
       clearInterval(timerInterval);
       isRunning = false;
-      timeLeft = totalTime; // Reset to default session length
+      timeLeft = totalTime;
       updateTimeDisplay();
       startStopButton.textContent = 'Start';
     }
 
     // Quick time selection
-    quickButtons.forEach(button => {
-      button.addEventListener('click', () => {
-        if (!isRunning) {
-          timeLeft = parseInt(button.dataset.time, 10);
-          updateTimeDisplay();
-        }
-      });
+    quickSelect.addEventListener('change', (e) => {
+      if (!isRunning) {
+        timeLeft = parseInt(e.target.value, 10);
+        totalTime = timeLeft;
+        updateTimeDisplay();
+      }
     });
 
     // Event listeners
