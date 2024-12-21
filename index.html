@@ -30,7 +30,7 @@
       width: 320px;
       padding: 10px;
       border: 1px solid #8C7B65;
-      border-radius: 6px;
+      border-radius: 20px;
     }
 
     .circle-container {
@@ -63,7 +63,7 @@
     .time-display {
       font-size: 4.5rem;
       color: #8C7B65;
-      position: relative;
+      position: absolute;
       z-index: 2;
     }
 
@@ -75,7 +75,7 @@
       width: 100%;
       padding: 8px;
       border: none;
-      border-radius: 6px;
+      border-radius: 20px;
       background: transparent;
       color: #8C7B65;
       font-size: 1rem;
@@ -94,7 +94,7 @@
     .controls button {
       flex: 1;
       padding: 6px;
-      border-radius: 6px;
+      border-radius: 20px;
       background: transparent;
       color: #8C7B65;
       font-family: 'Georgia', serif;
@@ -159,9 +159,9 @@
 
       Array.from(minuteMarkers.children).forEach((marker, index) => {
         if (index < activeMarkers) {
-          marker.style.backgroundColor = 'rgba(140, 123, 101, 0.1)';
+          marker.style.backgroundColor = 'rgba(224, 224, 224, 1)'; // Light gray for passed time
         } else {
-          marker.style.backgroundColor = '#8C7B65';
+          marker.style.backgroundColor = '#8C7B65'; // Original brown for remaining time
         }
       });
     }
